@@ -1,13 +1,42 @@
 
-print("================================")
-print("        ZEUS v0.3 ONLINE")
-print("================================")
-print()
-print("Greetings, Keith.")
-print("The Zeus system is operational.")
-print()
-
+CONFIG_FILE = "config.txt"
 MEMORY_FILE = "memory.txt"
+
+
+def load_config():
+    config = {}
+
+    try:
+        with open(CONFIG_FILE, "r") as file:
+            for line in file:
+                line = line.strip()
+
+                if "=" in line:
+                    key, value = line.split("=", 1)
+                    config[key] = value
+
+    except FileNotFoundError:
+        print("ZEUS: Configuration file not found.")
+
+    return config
+
+
+config = load_config()
+
+NAME = config.get("NAME", "ZEUS")
+OWNER = config.get("OWNER", "KEITH")
+VERSION = config.get("VERSION", "0.4")
+PERSONALITY = config.get("PERSONALITY", "LOYAL, DIRECT, HELPFUL")
+
+
+print("================================")
+print("        " + NAME + " v" + VERSION + " ONLINE")
+print("================================")
+print()
+print("Greetings, " + OWNER + ".")
+print("The " + NAME + " system is operational.")
+print("Personality: " + PERSONALITY)
+print()
 
 
 def remember(fact):
@@ -16,7 +45,7 @@ def remember(fact):
             memories = [memory.strip() for memory in file.readlines()]
 
         if fact in memories:
-            print("ZEUS: I already know that.")
+            print(NAME + ": I already know that.")
             return
 
     except FileNotFoundError:
@@ -25,7 +54,7 @@ def remember(fact):
     with open(MEMORY_FILE, "a") as file:
         file.write(fact + "\n")
 
-    print("ZEUS: I will remember that.")
+    print(NAME + ": I will remember that.")
 
 
 def show_memory():
@@ -33,25 +62,25 @@ def show_memory():
         with open(MEMORY_FILE, "r") as file:
             memories = file.readlines()
 
-        print("ZEUS MEMORY:")
+        print(NAME + " MEMORY:")
 
         for memory in memories:
             print("-", memory.strip())
 
     except FileNotFoundError:
-        print("ZEUS: My memory is empty.")
+        print(NAME + ": My memory is empty.")
 
 
 def status():
-    print("ZEUS: All systems operational.")
+    print(NAME + ": All systems operational.")
 
 
 def hello():
-    print("ZEUS: Greetings, Keith.")
+    print(NAME + ": Greetings, " + OWNER + ".")
 
 
 def help_menu():
-    print("ZEUS COMMANDS:")
+    print(NAME + " COMMANDS:")
     print("- hello")
     print("- status")
     print("- memory")
@@ -78,7 +107,7 @@ def process_command(command):
         if fact:
             remember(fact)
         else:
-            print("ZEUS: Tell me what you want me to remember.")
+            print(NAME + ": Tell me what you want me to remember.")
 
     elif command.lower() == "help":
         help_menu()
@@ -87,7 +116,7 @@ def process_command(command):
         return False
 
     else:
-        print("ZEUS: I don't understand that command yet.")
+        print(NAME + ": I don't understand that command yet.")
 
     return True
 
@@ -96,5 +125,5 @@ while True:
     command = input("YOU: ")
 
     if not process_command(command):
-        print("ZEUS: Shutting down. Until next time.")
+        print(NAME + ": Shutting down. Until next time.")
         break
