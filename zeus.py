@@ -1,4 +1,3 @@
-
 CONFIG_FILE = "config.txt"
 MEMORY_FILE = "memory.txt"
 
@@ -25,7 +24,7 @@ config = load_config()
 
 NAME = config.get("NAME", "ZEUS")
 OWNER = config.get("OWNER", "KEITH")
-VERSION = config.get("VERSION", "0.4")
+VERSION = config.get("VERSION", "0.5")
 PERSONALITY = config.get("PERSONALITY", "LOYAL, DIRECT, HELPFUL")
 
 
@@ -71,6 +70,26 @@ def show_memory():
         print(NAME + ": My memory is empty.")
 
 
+def forget(fact):
+    try:
+        with open(MEMORY_FILE, "r") as file:
+            memories = [memory.strip() for memory in file.readlines()]
+
+        if fact not in memories:
+            print(NAME + ": I don't have that memory.")
+            return
+
+        memories = [memory for memory in memories if memory != fact]
+
+        with open(MEMORY_FILE, "w") as file:
+            for memory in memories:
+                file.write(memory + "\n")
+
+        print(NAME + ": Memory forgotten.")
+
+    except FileNotFoundError:
+        print(NAME + ": My memory is empty.")
+
 def status():
     print(NAME + ": All systems operational.")
 
@@ -85,6 +104,7 @@ def help_menu():
     print("- status")
     print("- memory")
     print("- remember <something>")
+    print("- forget <something>")
     print("- help")
     print("- quit")
 
@@ -108,6 +128,14 @@ def process_command(command):
             remember(fact)
         else:
             print(NAME + ": Tell me what you want me to remember.")
+
+    elif command.lower().startswith("forget "):
+        fact = command[7:].strip()
+
+        if fact:
+            forget(fact)
+        else:
+            print(NAME + ": Tell me what you want me to forget.")
 
     elif command.lower() == "help":
         help_menu()
