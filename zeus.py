@@ -1,6 +1,6 @@
 
 print("================================")
-print("        ZEUS v0.2 ONLINE")
+print("        ZEUS v0.3 ONLINE")
 print("================================")
 print()
 print("Greetings, Keith.")
@@ -34,6 +34,7 @@ def show_memory():
             memories = file.readlines()
 
         print("ZEUS MEMORY:")
+
         for memory in memories:
             print("-", memory.strip())
 
@@ -41,25 +42,59 @@ def show_memory():
         print("ZEUS: My memory is empty.")
 
 
-while True:
-    command = input("YOU: ").strip()
+def status():
+    print("ZEUS: All systems operational.")
+
+
+def hello():
+    print("ZEUS: Greetings, Keith.")
+
+
+def help_menu():
+    print("ZEUS COMMANDS:")
+    print("- hello")
+    print("- status")
+    print("- memory")
+    print("- remember <something>")
+    print("- help")
+    print("- quit")
+
+
+def process_command(command):
+    command = command.strip()
 
     if command.lower() == "status":
-        print("ZEUS: All systems operational.")
+        status()
 
     elif command.lower() == "hello":
-        print("ZEUS: Greetings, Keith.")
-
-    elif command.lower().startswith("remember "):
-        fact = command[9:]
-        remember(fact)
+        hello()
 
     elif command.lower() == "memory":
         show_memory()
 
+    elif command.lower().startswith("remember "):
+        fact = command[9:].strip()
+
+        if fact:
+            remember(fact)
+        else:
+            print("ZEUS: Tell me what you want me to remember.")
+
+    elif command.lower() == "help":
+        help_menu()
+
     elif command.lower() in ["quit", "exit"]:
-        print("ZEUS: Shutting down. Until next time.")
-        break
+        return False
 
     else:
         print("ZEUS: I don't understand that command yet.")
+
+    return True
+
+
+while True:
+    command = input("YOU: ")
+
+    if not process_command(command):
+        print("ZEUS: Shutting down. Until next time.")
+        break
