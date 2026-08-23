@@ -1,5 +1,6 @@
 CONFIG_FILE = "config.txt"
 MEMORY_FILE = "memory.txt"
+TASK_FILE = "tasks.txt"
 
 
 def load_config():
@@ -90,6 +91,28 @@ def forget(fact):
     except FileNotFoundError:
         print(NAME + ": My memory is empty.")
 
+
+def add_task(task):
+    with open(TASK_FILE, "a") as file:
+        file.write(task + "\n")
+
+    print(NAME + ": Task created.")
+
+
+def show_tasks():
+    try:
+        with open(TASK_FILE, "r") as file:
+            tasks = file.readlines()
+
+        print(NAME + " TASKS:")
+
+        for task in tasks:
+            print("-", task.strip(), "[PENDING]")
+
+    except FileNotFoundError:
+        print(NAME + ": I have no tasks.")
+
+
 def status():
     print(NAME + ": All systems operational.")
 
@@ -105,6 +128,8 @@ def help_menu():
     print("- memory")
     print("- remember <something>")
     print("- forget <something>")
+    print("- task add <something>")
+    print("- tasks")
     print("- help")
     print("- quit")
 
@@ -136,6 +161,17 @@ def process_command(command):
             forget(fact)
         else:
             print(NAME + ": Tell me what you want me to forget.")
+
+    elif command.lower().startswith("task add "):
+        task = command[9:].strip()
+
+        if task:
+            add_task(task)
+        else:
+            print(NAME + ": Tell me what task you want me to add.")
+
+    elif command.lower() == "tasks":
+        show_tasks()
 
     elif command.lower() == "help":
         help_menu()
