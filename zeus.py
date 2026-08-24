@@ -25,7 +25,7 @@ config = load_config()
 
 NAME = config.get("NAME", "ZEUS")
 OWNER = config.get("OWNER", "KEITH")
-VERSION = config.get("VERSION", "0.5")
+VERSION = config.get("VERSION", "0.7")
 PERSONALITY = config.get("PERSONALITY", "LOYAL, DIRECT, HELPFUL")
 
 
@@ -94,7 +94,7 @@ def forget(fact):
 
 def add_task(task):
     with open(TASK_FILE, "a") as file:
-        file.write(task + "\n")
+        file.write("PENDING|" + task + "\n")
 
     print(NAME + ": Task created.")
 
@@ -106,8 +106,50 @@ def show_tasks():
 
         print(NAME + " TASKS:")
 
-        for task in tasks:
-            print("-", task.strip(), "[PENDING]")
+        for number, task in enumerate(tasks, 1):
+            task = task.strip()
+
+            if "|" in task:
+                task_status, description = task.split("|", 1)
+            else:
+                task_status = "PENDING"
+                description = task
+
+            print("-", str(number) + ".", description, "[" + task_status + "]")
+
+    except FileNotFoundError:
+        print(NAME + ": I have no tasks.")
+
+
+def complete_task(task_number):
+    try:
+        with open(TASK_FILE, "r") as file:
+            tasks = [task.strip() for task in file.readlines()]
+
+        if task_number < 1 or task_number > len(tasks):
+            print(NAME + ": That task number does not exist.")
+            return
+
+        updated_tasks = []
+
+        for number, task in enumerate(tasks, 1):
+
+            if "|" in task:
+                task_status, description = task.split("|", 1)
+            else:
+                task_status = "PENDING"
+                description = task
+
+            if number == task_number:
+                task_status = "DONE"
+
+            updated_tasks.append(task_status + "|" + description)
+
+        with open(TASK_FILE, "w") as file:
+            for task in updated_tasks:
+                file.write(task + "\n")
+
+        print(NAME + ": Task completed.")
 
     except FileNotFoundError:
         print(NAME + ": I have no tasks.")
@@ -130,6 +172,7 @@ def help_menu():
     print("- forget <something>")
     print("- task add <something>")
     print("- tasks")
+    print("- task done <number>")
     print("- help")
     print("- quit")
 
@@ -172,6 +215,14 @@ def process_command(command):
 
     elif command.lower() == "tasks":
         show_tasks()
+
+    elif command.lower().startswith("task done "):
+        number_text = command[10:].strip()
+
+        if number_text.isdigit():
+            complete_task(int(number_text))
+        else:
+            print(NAME + ": Tell me the task number to complete.")
 
     elif command.lower() == "help":
         help_menu()
