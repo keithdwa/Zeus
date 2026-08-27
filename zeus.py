@@ -182,16 +182,26 @@ def think(command):
 
     if command.startswith("task "):
         return "TASK"
+
     elif command.startswith("remember "):
         return "MEMORY"
+
     elif command.startswith("forget "):
         return "MEMORY"
-    elif command.endswith("?") or command.startswith(("what ", "why ", "how ", "when ", "where ", "who ")):
+
+    elif command.endswith("?") or command.startswith(
+        ("what ", "why ", "how ", "when ", "where ", "who ")
+    ):
         return "QUESTION"
+
     elif command in ["hello", "hi", "hey"]:
         return "GREETING"
+
     else:
         return "UNKNOWN"
+
+
+PREVIOUS_COMMAND = ""
 
 
 def respond(thought, command):
@@ -207,6 +217,14 @@ def respond(thought, command):
         elif "how are you" in text:
             return "All systems are operational, " + OWNER + "."
 
+        elif "what are we building" in text:
+            return "We're building Zeus, your personal AI system."
+
+        elif text in ["why?", "why"]:
+            if "what are we building" in PREVIOUS_COMMAND.lower():
+                return "Because we're building a personal AI system that can remember, reason and eventually act."
+            return "Give me a little more context and I'll work it out."
+
         elif "favourite project" in text or "favorite project" in text:
             try:
                 with open(MEMORY_FILE, "r") as file:
@@ -215,6 +233,7 @@ def respond(thought, command):
                 for memory in memories:
                     if "favourite project" in memory.lower() or "favorite project" in memory.lower():
                         return "I remember: " + memory
+
             except FileNotFoundError:
                 pass
 
@@ -222,12 +241,16 @@ def respond(thought, command):
 
         else:
             return "I'm listening, " + OWNER + ". Ask me anything."
+
     elif thought == "TASK":
         return "I see a task. I am ready to act."
+
     elif thought == "MEMORY":
         return "I understand. I will consider that part of my memory."
+
     elif thought == "GREETING":
         return "Greetings, " + OWNER + ". I am here."
+
     else:
         return "I don't understand that yet, but I am learning."
 
@@ -287,6 +310,7 @@ def process_command(command):
 
     else:
         thought = think(command)
+        print(NAME + ": I classified that as " + thought + ".")
         print(NAME + ": " + respond(thought, command))
 
     return True
@@ -298,3 +322,5 @@ while True:
     if not process_command(command):
         print(NAME + ": Shutting down. Until next time.")
         break
+
+    PREVIOUS_COMMAND = command
