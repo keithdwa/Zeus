@@ -177,6 +177,44 @@ def help_menu():
     print("- quit")
 
 
+def think(command):
+    command = command.lower().strip()
+
+    if command.startswith("task "):
+        return "TASK"
+    elif command.startswith("remember "):
+        return "MEMORY"
+    elif command.startswith("forget "):
+        return "MEMORY"
+    elif command.endswith("?") or command.startswith(("what ", "why ", "how ", "when ", "where ", "who ")):
+        return "QUESTION"
+    elif command in ["hello", "hi", "hey"]:
+        return "GREETING"
+    else:
+        return "UNKNOWN"
+
+
+def respond(thought, command):
+    if thought == "QUESTION":
+        text = command.lower()
+        if "what are you doing" in text:
+            return "I'm here, " + OWNER + ". Monitoring Zeus and waiting for your next instruction."
+        elif "who are you" in text:
+            return "I am " + NAME + ", your personal AI system."
+        elif "how are you" in text:
+            return "All systems are operational, " + OWNER + "."
+        else:
+            return "I'm listening, " + OWNER + ". Ask me anything."
+    elif thought == "TASK":
+        return "I see a task. I am ready to act."
+    elif thought == "MEMORY":
+        return "I understand. I will consider that part of my memory."
+    elif thought == "GREETING":
+        return "Greetings, " + OWNER + ". I am here."
+    else:
+        return "I don't understand that yet, but I am learning."
+
+
 def process_command(command):
     command = command.strip()
 
@@ -231,7 +269,8 @@ def process_command(command):
         return False
 
     else:
-        print(NAME + ": I don't understand that command yet.")
+        thought = think(command)
+        print(NAME + ": " + respond(thought, command))
 
     return True
 
