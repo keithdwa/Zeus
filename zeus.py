@@ -197,12 +197,29 @@ def think(command):
 def respond(thought, command):
     if thought == "QUESTION":
         text = command.lower()
+
         if "what are you doing" in text:
             return "I'm here, " + OWNER + ". Monitoring Zeus and waiting for your next instruction."
+
         elif "who are you" in text:
             return "I am " + NAME + ", your personal AI system."
+
         elif "how are you" in text:
             return "All systems are operational, " + OWNER + "."
+
+        elif "favourite project" in text or "favorite project" in text:
+            try:
+                with open(MEMORY_FILE, "r") as file:
+                    memories = [memory.strip() for memory in file.readlines()]
+
+                for memory in memories:
+                    if "favourite project" in memory.lower() or "favorite project" in memory.lower():
+                        return "I remember: " + memory
+            except FileNotFoundError:
+                pass
+
+            return "I don't have that in my memory yet."
+
         else:
             return "I'm listening, " + OWNER + ". Ask me anything."
     elif thought == "TASK":
