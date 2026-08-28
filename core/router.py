@@ -1,6 +1,7 @@
 from core.memory import Memory
 from core.tasks import TaskManager
 from core.brain import Brain
+from core.orchestrator import Orchestrator
 from agents import AgentRegistry
 
 
@@ -10,9 +11,13 @@ class ZeusRouter:
         self.memory = Memory()
         self.tasks = TaskManager()
         self.agents = AgentRegistry()
+        self.orchestrator = Orchestrator(self.agents)
 
     def handle(self, command):
         command = command.strip()
+
+        if command.lower().startswith("orchestrate "):
+            return self.orchestrate(command[12:])
 
         if command.lower().startswith("ask "):
             return self.route_agent(command[4:])
@@ -84,3 +89,21 @@ class ZeusRouter:
             return "Unknown agent. Available agents: " + available
 
         return agent.execute(task)
+
+    def orchestrate(self, task):
+        results = self.orchestrator.run(task)
+
+        if not results:
+            return "No suitable agent was available."
+
+        output = []
+
+        for result in results:
+            output.append(
+                "{}:\n{}".format(
+                    result["agent"],
+                    result["result"]
+                )
+            )
+
+        return "\n\n".join(output)
