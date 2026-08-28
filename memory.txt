@@ -1,1 +1,4 @@
 Zeus memory initialized
+Zeus v0.8
+Zeus is learning
+My favourite project is Zeus

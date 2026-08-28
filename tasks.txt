@@ -1,1 +1,3 @@
-PENDING|Build the Zeus AI ecosystem
+PENDING|Build the Zeus AI ecosystemPENDING|Build Zeus
+PENDING|Test Zeus thinking
+PENDING|Build Zeus v0.8
