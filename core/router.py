@@ -1,6 +1,7 @@
 from core.memory import Memory
 from core.tasks import TaskManager
 from core.brain import Brain
+from agents import AgentRegistry
 
 
 class ZeusRouter:
@@ -8,8 +9,14 @@ class ZeusRouter:
         self.brain = Brain()
         self.memory = Memory()
         self.tasks = TaskManager()
+        self.agents = AgentRegistry()
 
     def handle(self, command):
+        command = command.strip()
+
+        if command.lower().startswith("ask "):
+            return self.route_agent(command[4:])
+
         decision = self.brain.think(command)
         intent = decision["intent"]
 
@@ -37,7 +44,11 @@ class ZeusRouter:
 
             for number, task in enumerate(tasks, 1):
                 lines.append(
-                    f"{number}. [{task['status']}] {task['task']}"
+                    "{}. [{}] {}".format(
+                        number,
+                        task["status"],
+                        task["task"]
+                    )
                 )
 
             return "\n".join(lines)
@@ -52,3 +63,24 @@ class ZeusRouter:
             return "__SHUTDOWN__"
 
         return decision["response"]
+
+    def route_agent(self, request):
+        parts = request.split(" ", 1)
+
+        if len(parts) < 2:
+            return "Specify an agent and a task."
+
+        agent_name = parts[0]
+        task = parts[1]
+
+        agent = self.agents.get(agent_name)
+
+        if not agent:
+            available = ", ".join(
+                agent["name"]
+                for agent in self.agents.list_agents()
+            )
+
+            return "Unknown agent. Available agents: " + available
+
+        return agent.execute(task)
